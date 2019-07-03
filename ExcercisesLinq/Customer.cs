@@ -12,14 +12,14 @@ public enum Gender
 public enum PlayTennis
 {
     NULL,
-    Seldom,
-    Daily,
     Never,
-    Often,
+    Once,
+    Seldom,
+    Yearly,
     Monthly,
     Weekly,
-    Yearly,
-    Once
+    Daily,
+    Often,
 }
 public enum LikeFruit
 {

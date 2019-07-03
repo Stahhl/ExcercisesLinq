@@ -17,14 +17,165 @@ namespace ExcercisesLinq
             //Module_2();
             //Module_3(file);
             //Module_4(file);
-            Module_Search_Name(dataFiles[1]);
+            //Module_Search_Name(dataFiles[1]);
+            Module_Search_Enum(dataFiles[1]);
         }
-        static void Module_Search_Name(string fileName)
+        static void Module_Search_Enum(string fileName)
         {
             List<Customer> customerList = Parser.CreateListOfCustomers(fileName);
             List<Customer> hits = new List<Customer>();
+
+            string[] responseGenderOptions = new string[]
+            {
+                "Men",
+                "Women",
+                "Other",
+                "Everybody"
+            };
+            string[] responsePlayTennisOptions = new string[]
+            {
+                "that never play tennis",
+                "that tried tennis once",
+                "that seldom play tennis",
+                "that play tennis once a year",
+                "that play tennis once a moth",
+                "that play tennis once a week",
+                "that play tennis every day",
+                "that play tennis often",
+                "that play tennis any amount of time"
+            };
+            string[] responseLikeFruitOptions = new string[]
+            {
+                "and like fruit",
+                "but don't like fruit",
+                "and have no opinion on fruit"
+            };
+
+            string responseGender = string.Empty;
+            string responsePlayTennis = string.Empty;
+            string responseLikeFruit = string.Empty;
+
+            Gender gender = Gender.NULL;
+            PlayTennis playTennis = PlayTennis.NULL;
+            LikeFruit likeFruit = LikeFruit.NULL;
+
+            Console.Write("Gender: (M)ale (F)emale (O)ther (I)gnore: ");
+            switch (Console.ReadLine().ToUpper())
+            {
+                case "M":
+                    gender = Gender.Male;
+                    responseGender = responseGenderOptions[0];
+                    break;
+                case "F":
+                    gender = Gender.Female;
+                    responseGender = responseGenderOptions[1];
+                    break;
+                case "O":
+                    gender = Gender.Other;
+                    responseGender = responseGenderOptions[2];
+                    break;
+                default:
+                    gender = Gender.NULL;
+                    responseGender = responseGenderOptions[3];
+                    break;
+            }
+            Console.Write("PlayTennis: (N)ever (O)nce (S)eldom (Y)early (M)onthly (W)eekly (D)aily (Of)ten (I)gnore: ");
+            switch (Console.ReadLine().ToUpper())
+            {
+                case "N":
+                    playTennis = PlayTennis.Never;
+                    responsePlayTennis = responsePlayTennisOptions[0];
+                    break;
+                case "O":
+                    playTennis = PlayTennis.Once;
+                    responsePlayTennis = responsePlayTennisOptions[1];
+                    break;
+                case "S":
+                    playTennis = PlayTennis.Seldom;
+                    responsePlayTennis = responsePlayTennisOptions[2];
+                    break;
+                case "Y":
+                    playTennis = PlayTennis.Yearly;
+                    responsePlayTennis = responsePlayTennisOptions[3];
+                    break;
+                case "M":
+                    playTennis = PlayTennis.Monthly;
+                    responsePlayTennis = responsePlayTennisOptions[4];
+                    break;
+                case "W":
+                    playTennis = PlayTennis.Weekly;
+                    responsePlayTennis = responsePlayTennisOptions[5];
+                    break;
+                case "D":
+                    playTennis = PlayTennis.Daily;
+                    responsePlayTennis = responsePlayTennisOptions[6];
+                    break;
+                case "OF":
+                    playTennis = PlayTennis.Often;
+                    responsePlayTennis = responsePlayTennisOptions[7];
+                    break;
+                default:
+                    playTennis = PlayTennis.NULL;
+                    responsePlayTennis = responsePlayTennisOptions[8];
+                    break;
+            }
+            Console.Write("LikeFruit: (T)rue (F)alse (I)gnore: ");
+            switch (Console.ReadLine().ToUpper())
+            {
+                case "T":
+                    likeFruit = LikeFruit.True;
+                    responseLikeFruit = responseLikeFruitOptions[0];
+                    break;
+                case "F":
+                    likeFruit = LikeFruit.False;
+                    responseLikeFruit = responseLikeFruitOptions[1];
+                    break;
+                default:
+                    likeFruit = LikeFruit.NULL;
+                    responseLikeFruit = responseLikeFruitOptions[2];
+                    break;
+            }
+
+            try
+            {
+                hits = (from c in customerList
+                        where (c.Gender == gender || gender == Gender.NULL)
+                        where (c.PlayTennis == playTennis || playTennis == PlayTennis.NULL)
+                        where (c.LikeFruit == likeFruit || likeFruit == LikeFruit.NULL)
+                        select c).ToList();
+            }
+            catch
+            {
+                throw new Exception("Error - Search Enum");
+            }
+            PrintMsg($"{responseGender} {responsePlayTennis} {responseLikeFruit}.", ConsoleColor.White);
+            PrintMsg($"Number of hits: {hits.Count()}", ConsoleColor.White);
+            foreach (var item in hits)
+            {
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.Write(item.FullName.PadRight(25) + "\t");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write(item.Gender + "\t");
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write(item.PlayTennis + "\t");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write(item.LikeFruit + "\t");
+                Console.WriteLine();
+            }
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("Press RETUR to restart: ");
+            Console.ReadLine();
+            Main();
+        }
+        static void Module_Search_Text(string fileName)
+        {
+            List<Customer> customerList = Parser.CreateListOfCustomers(fileName);
+            List<Customer> hits = new List<Customer>();
+
             Console.Write("Search customer by: ");
+
             Console.ForegroundColor = ConsoleColor.Green;
+
             string input = Console.ReadLine().ToUpper();
             if (input == string.Empty)
                 Main();
@@ -34,15 +185,13 @@ namespace ExcercisesLinq
             try
             {
                 hits = customerList.Where(customer =>
-                    customer.FirstName.ToUpper().Contains(input) ||
-                    customer.LastName.ToUpper().Contains(input) ||
                     customer.FullName.ToUpper().Contains(input) ||
                     customer.Email.ToUpper().Contains(input)
                     ).ToList();
             }
             catch
             {
-                Console.WriteLine("Error - Search");
+                throw new Exception("Error - Search Text");
             }
 
             PrintMsg($"Number of hits: {hits.Count()}", ConsoleColor.White);
@@ -158,12 +307,8 @@ namespace ExcercisesLinq
             if (input.Length > msg.Length)
                 return;
 
-            List<KeyValuePair<string, bool>> kvpList = new List<KeyValuePair<string, bool>>();
+            bool[] boolArray = new bool[msg.Length];
 
-            foreach (char c in msg)
-            {
-                kvpList.Add(new KeyValuePair<string, bool>(c.ToString(), false));
-            }
             try
             {
                 for (int i = 0; i < msg.Length - (input.Length - 1); i++)
@@ -174,9 +319,7 @@ namespace ExcercisesLinq
                     {
                         for (int x = i; x < (i + sub.Length); x++)
                         {
-                            string key = kvpList[x].Key;
-
-                            kvpList[x] = new KeyValuePair<string, bool>(key, true);
+                            boolArray[x] = true;
                         }
                     }
                 }
@@ -186,13 +329,13 @@ namespace ExcercisesLinq
                 throw new Exception("Error - HighlightLetters");
             }
 
-            for (int i = 0; i < kvpList.Count(); i++)
+            for (int i = 0; i < msg.Length; i++)
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                if (kvpList[i].Value == true)
+                if (boolArray[i] == true)
                     Console.ForegroundColor = ConsoleColor.Green;
 
-                Console.Write(kvpList[i].Key);
+                Console.Write(msg[i]);
                 Console.ResetColor();
             }
             Console.Write("".PadRight(35 - msg.Length) + "\t");
